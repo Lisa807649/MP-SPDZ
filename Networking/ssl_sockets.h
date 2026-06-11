@@ -57,7 +57,7 @@ public:
 #endif
         lowest_layer().assign(boost::asio::ip::tcp::v4(), plaintext_socket);
         set_verify_mode(boost::asio::ssl::verify_peer);
-        set_verify_callback(boost::asio::ssl::host_name_verification(other));
+        set_verify_callback(boost::asio::ssl::rfc2818_verification(other));
         if (client)
             try
             {
