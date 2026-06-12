@@ -1,7 +1,10 @@
 # Offline data, runtime logs #
 ##############################
-Player-Data
 Player-Data/*
+!Player-Data/**/
+!Player-Data/*.png
+!Player-Data/**/*.png
+
 Prep-Data/*
 logs/*
 Language-Definition/main.pdf
