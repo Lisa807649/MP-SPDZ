@@ -90,15 +90,6 @@ def goodness_mean_squared(h, n):
 # Input-P1-0 must contain:
 # W1, b1, W2, b2
 
-print_ln("Reading model weights from Party 1...")
-
-W1 = read_matrix(HIDDEN, INPUT_DIM, 1)
-b1 = read_bias(HIDDEN, 1)
-
-W2 = read_matrix(HIDDEN, HIDDEN, 1)
-b2 = read_bias(HIDDEN, 1)
-
-print_ln("Finished reading model weights.")
 
 # =========================
 # Run inference for 10 samples from Party 0
@@ -109,26 +100,44 @@ print_ln("Finished reading model weights.")
 # ...
 # sample 9: 2160 values
 
+print_ln("Reading model weights from Party 1...")
+
+start_timer(1)
+W1 = read_matrix(HIDDEN, INPUT_DIM, 1)
+b1 = read_bias(HIDDEN, 1)
+
+W2 = read_matrix(HIDDEN, HIDDEN, 1)
+b2 = read_bias(HIDDEN, 1)
+stop_timer(1)
+
+print_ln("Finished reading model weights.")
+
+
 for sample_idx in range(NUM_SAMPLES):
 
     print_ln("Running sample %s...", sample_idx)
 
-    # Party 0 provides the next sample.
+    # Timer 2: only reading Party 0 sample input
+    start_timer(2)
     x = read_vector(INPUT_DIM, 0)
+    stop_timer(2)
 
-    # Layer 1
+    # Timer 3: actual FF inference computation
+    start_timer(3)
+
     h1 = linear_layer(x, W1, b1, INPUT_DIM, HIDDEN)
     g1 = goodness_mean_squared(h1, HIDDEN)
 
-    # Layer 2
     h2 = linear_layer(h1, W2, b2, HIDDEN, HIDDEN)
     g2 = goodness_mean_squared(h2, HIDDEN)
 
-    # Total goodness
     g_total = g1 + g2
-
-    # Positive if total goodness is above threshold
     prediction = g_total > THRESHOLD
 
+    stop_timer(3)
+
+    # Timer 4: reveal/output only
+    start_timer(4)
     print_ln("Sample %s goodness total: %s", sample_idx, g_total.reveal())
     print_ln("Sample %s prediction positive: %s", sample_idx, prediction.reveal())
+    stop_timer(4)
